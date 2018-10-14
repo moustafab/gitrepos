@@ -13,6 +13,7 @@ import (
 )
 
 var cfgFile string
+var owner string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -21,8 +22,8 @@ var rootCmd = &cobra.Command{
 	Long: `A tool to list the git repos of a particular user on various sites. 
 For example:
 
-gitrepos github -o moustafab
-gitrepos github --owner moustafab`,
+gitrepos <sitename> -o moustafab
+gitrepos <sitename> --owner moustafab`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -44,10 +45,12 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitrepos.yaml)")
-
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+
+	rootCmd.PersistentFlags().StringVarP(&owner, "owner", "o", "", "owner to query of the repositories")
 }
 
 // initConfig reads in config file and ENV variables if set.
