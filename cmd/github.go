@@ -1,6 +1,5 @@
 // Copyright © 2018 Moustafa Baiou <mbaiou_1@yahoo.com>
 
-
 package cmd
 
 import (
@@ -13,8 +12,8 @@ import (
 // githubCmd represents the github command
 var githubCmd = &cobra.Command{
 	Use:   "github",
-	Short: "list repos at github.com",
-	Long: `list repos at github.com that the current user has access to based on the owner
+	Short: "list owner's repos at github.com",
+	Long: `list owner's repos at github.com that the current user has access to
 For example:
 
 gitrepos github -o moustafab

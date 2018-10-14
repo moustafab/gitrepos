@@ -1,6 +1,5 @@
 // Copyright © 2018 Moustafa Baiou <mbaiou_1@yahoo.com>
 
-
 package cmd
 
 import (
@@ -18,8 +17,8 @@ var owner string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gitrepos",
-	Short: "A tool to list the git repos of a particular user on various sites",
-	Long: `A tool to list the git repos of a particular user on various sites. 
+	Short: "A tool to list the git repos of a particular owner on various sites",
+	Long: `A tool to list the git repos of a particular owner on various sites. 
 For example:
 
 gitrepos <sitename> -o moustafab
@@ -48,7 +47,6 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 
 	rootCmd.PersistentFlags().StringVarP(&owner, "owner", "o", "", "owner to query of the repositories")
 }
