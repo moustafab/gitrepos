@@ -12,8 +12,8 @@ import (
 )
 
 var cfgFile string
-var owner string
-var showCount bool
+var argOwner string
+var argShowCount bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -49,8 +49,8 @@ func init() {
 	// when this action is called directly.
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	rootCmd.PersistentFlags().StringVarP(&owner, "owner", "o", "", "(required) owner of the repositories")
-	rootCmd.PersistentFlags().BoolVarP(&showCount, "count", "c", false, "(optional) print the count")
+	rootCmd.PersistentFlags().StringVarP(&argOwner, "owner", "o", "", "(required) owner of the repositories")
+	rootCmd.PersistentFlags().BoolVarP(&argShowCount, "count", "c", false, "(optional) print the count")
 }
 
 // initConfig reads in config file and ENV variables if set.

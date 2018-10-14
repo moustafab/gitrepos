@@ -19,31 +19,45 @@ For example:
 gitrepos github -o moustafab
 gitrepos github --owner moustafab`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repos := getRepoNames(owner)
+		repos := getRepoNames(argOwner)
 		for _, repo := range repos {
 			fmt.Println(repo)
 		}
-		if showCount {
+		if argShowCount {
 			fmt.Println("")
-			fmt.Println(fmt.Sprintf("%v has %v repositories on github!", owner, len(repos)))
+			fmt.Println(fmt.Sprintf("%v has %v repositories on github!", argOwner, len(repos)))
 		}
 	},
 }
 
-func getRepoNames(s string) []string {
+func getRepoNames(owner string) []string {
 	var repos []string
-	client := github.NewClient(nil)
-
-	fullRepositories, _, githubError := client.Repositories.List(context.Background(), owner, nil)
-	if githubError != nil {
-		return nil
+	// get all pages of results
+	allRepos := queryAPI(owner)
+	if allRepos != nil {
+		repos = parseRepoNames(allRepos)
 	}
-
-	if fullRepositories != nil {
-		repos = parseRepoNames(fullRepositories)
-	}
-
 	return repos
+}
+
+func queryAPI(owner string) []*github.Repository {
+	client := github.NewClient(nil)
+	opt := &github.RepositoryListOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+	}
+	var allRepos []*github.Repository
+	for {
+		pageOfRepos, resp, githubError := client.Repositories.List(context.Background(), owner, opt)
+		if githubError != nil {
+			return nil
+		}
+		allRepos = append(allRepos, pageOfRepos...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	return allRepos
 }
 
 func parseRepoNames(repositories []*github.Repository) []string {
