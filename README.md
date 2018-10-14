@@ -8,7 +8,7 @@ a simple cli that gets a list of git repositories for an owner from various site
 
 ## usage
 
-`For example:
+```For example:
  
  gitrepos <sitename> -o moustafab
  gitrepos <sitename> --owner moustafab
@@ -26,7 +26,8 @@ a simple cli that gets a list of git repositories for an owner from various site
    -o, --owner string    owner to query of the repositories
    -t, --toggle          Help message for toggle
  
- Use "gitrepos [command] --help" for more information about a command.`
+ Use "gitrepos [command] --help" for more information about a command.
+ ```
  
 ## supported clients
  
