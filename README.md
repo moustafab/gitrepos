@@ -1,4 +1,4 @@
-#gitrepos
+# gitrepos
 
 a simple cli that gets a list of git repositories for an owner from various sites (github, bitbucket, gitlab)
 
