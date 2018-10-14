@@ -2,6 +2,22 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:e6757969df99a31195a17cc87ca3899c8b9312fce018c4e84f307cdd37deb405"
+  name = "github.com/crossid/bitbucket-golang-api"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e9dc2b33694c2bcfc760a4b00da5d73d4abe1194"
+
+[[projects]]
+  digest = "1:ace1aef6acdf2c4647365dc87c14fb8b71ed8bb0b3ae114ffb216614a24da219"
+  name = "github.com/dghubble/sling"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "eb56e89ac5088bebb12eef3cb4b293300f43608b"
+  version = "v1.1.0"
+
+[[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -170,6 +186,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/crossid/bitbucket-golang-api",
     "github.com/google/go-github/github",
     "github.com/mitchellh/go-homedir",
     "github.com/spf13/cobra",

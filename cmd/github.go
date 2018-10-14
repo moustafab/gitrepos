@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 )
@@ -19,35 +18,40 @@ For example:
 gitrepos github -o moustafab
 gitrepos github --owner moustafab`,
 	Run: func(cmd *cobra.Command, args []string) {
-		repos := getRepoNames(argOwner)
-		for _, repo := range repos {
-			fmt.Println(repo)
-		}
-		if argShowCount {
-			fmt.Println("")
-			fmt.Println(fmt.Sprintf("%v has %v repositories on github!", argOwner, len(repos)))
-		}
+		getRepositoriesAndOutput(GithubHost{cmd.Name()}, argOwner, argShowCount)
 	},
 }
 
-func getRepoNames(owner string) []string {
+func init() {
+	rootCmd.AddCommand(githubCmd)
+}
+
+type GithubHost struct {
+	name string
+}
+
+func (gh GithubHost) getCommandName() string {
+	return gh.name
+}
+
+func (gh GithubHost) getRepoNames(owner string) []string {
 	var repos []string
 	// get all pages of results
-	allRepos := queryAPI(owner)
+	allRepos := gh.queryApi(owner)
 	if allRepos != nil {
-		repos = parseRepoNames(allRepos)
+		repos = gh.parseRepoNames(allRepos)
 	}
 	return repos
 }
 
-func queryAPI(owner string) []*github.Repository {
+func (gh GithubHost) queryApi(owner string) interface{} {
 	client := github.NewClient(nil)
-	opt := &github.RepositoryListOptions{
+	options := &github.RepositoryListOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
 	}
 	var allRepos []*github.Repository
 	for {
-		pageOfRepos, resp, githubError := client.Repositories.List(context.Background(), owner, opt)
+		pageOfRepos, resp, githubError := client.Repositories.List(context.Background(), owner, options)
 		if githubError != nil {
 			return nil
 		}
@@ -55,19 +59,18 @@ func queryAPI(owner string) []*github.Repository {
 		if resp.NextPage == 0 {
 			break
 		}
-		opt.Page = resp.NextPage
+		options.Page = resp.NextPage
 	}
 	return allRepos
 }
 
-func parseRepoNames(repositories []*github.Repository) []string {
+func (gh GithubHost) parseRepoNames(unTypedRepositories interface{}) []string {
 	var listOfRepoNames []string
-	for _, repository := range repositories {
-		listOfRepoNames = append(listOfRepoNames, *repository.Name)
+	repositories, ok := unTypedRepositories.([]*github.Repository)
+	if ok {
+		for _, repository := range repositories {
+			listOfRepoNames = append(listOfRepoNames, *repository.Name)
+		}
 	}
 	return listOfRepoNames
-}
-
-func init() {
-	rootCmd.AddCommand(githubCmd)
 }
