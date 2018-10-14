@@ -13,6 +13,7 @@ import (
 
 var cfgFile string
 var owner string
+var showCount bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -46,9 +47,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitrepos.yaml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	rootCmd.PersistentFlags().StringVarP(&owner, "owner", "o", "", "owner to query of the repositories")
+	rootCmd.PersistentFlags().StringVarP(&owner, "owner", "o", "", "(required) owner of the repositories")
+	rootCmd.PersistentFlags().BoolVarP(&showCount, "count", "c", false, "(optional) print the count")
 }
 
 // initConfig reads in config file and ENV variables if set.

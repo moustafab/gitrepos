@@ -19,10 +19,13 @@ For example:
 gitrepos github -o moustafab
 gitrepos github --owner moustafab`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("github called with owner", owner)
 		repos := getRepoNames(owner)
 		for _, repo := range repos {
 			fmt.Println(repo)
+		}
+		if showCount {
+			fmt.Println("")
+			fmt.Println(fmt.Sprintf("%v has %v repositories on github!", owner, len(repos)))
 		}
 	},
 }
