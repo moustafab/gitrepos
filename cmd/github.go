@@ -45,6 +45,18 @@ func (gh GithubHost) getRepoNames(owner string, accessToken string, ownerType Ow
 	return repos
 }
 
+func enableSecurityAlerts(client *github.Client, owner string, allRepos []*github.Repository) {
+	for _, repository := range allRepos {
+		var repositoryName = *repository.Name
+		_, githubError := client.Repositories.EnableVulnerabilityAlerts(context.Background(), owner, repositoryName)
+		if githubError != nil {
+			println("Something went wrong with %s", repositoryName)
+			continue
+		}
+		println("%s successfully enabled vulnerability alerts!", repositoryName)
+	}
+}
+
 func getGithubRepos(client *github.Client, owner string, ownerType OwnerType) []*github.Repository {
 	ctx := context.Background()
 	globalOptions := github.ListOptions{PerPage: 100}
@@ -84,6 +96,7 @@ func getGithubRepos(client *github.Client, owner string, ownerType OwnerType) []
 		}
 		options.Page = resp.NextPage
 	}
+	enableSecurityAlerts(client, owner, allRepos)
 	return allRepos
 }
 
@@ -109,3 +122,5 @@ func (gh GithubHost) parseRepoNames(unTypedRepositories interface{}) []string {
 	}
 	return listOfRepoNames
 }
+
+
