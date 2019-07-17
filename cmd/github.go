@@ -6,6 +6,7 @@ import (
 	"context"
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 // githubCmd represents the github command
@@ -18,7 +19,7 @@ For example:
 gitrepos github -o moustafab
 gitrepos github --owner moustafab`,
 	Run: func(cmd *cobra.Command, args []string) {
-		getRepositoriesAndOutput(GithubHost{cmd.Name()}, argOwner, argShowCount)
+		getRepositoriesAndOutput(GithubHost{cmd.Name()}, argOwner, argIsOrg, argShowCount, argAccessToken)
 	},
 }
 
@@ -34,33 +35,67 @@ func (gh GithubHost) getCommandName() string {
 	return gh.name
 }
 
-func (gh GithubHost) getRepoNames(owner string) []string {
+func (gh GithubHost) getRepoNames(owner string, accessToken string, ownerType OwnerType) []string {
 	var repos []string
 	// get all pages of results
-	allRepos := gh.queryApi(owner)
+	allRepos := gh.queryApi(owner, accessToken, ownerType)
 	if allRepos != nil {
 		repos = gh.parseRepoNames(allRepos)
 	}
 	return repos
 }
 
-func (gh GithubHost) queryApi(owner string) interface{} {
-	client := github.NewClient(nil)
-	options := &github.RepositoryListOptions{
-		ListOptions: github.ListOptions{PerPage: 100},
+func getGithubRepos(client *github.Client, owner string, ownerType OwnerType) []*github.Repository {
+	ctx := context.Background()
+	globalOptions := github.ListOptions{PerPage: 100}
+
+	if ownerType == user {
+		options := &github.RepositoryListOptions{
+			ListOptions: globalOptions,
+		}
+		var allRepos []*github.Repository
+		for {
+			pageOfRepos, resp, githubError := client.Repositories.List(ctx, owner, options)
+			if githubError != nil {
+				return nil
+			}
+			allRepos = append(allRepos, pageOfRepos...)
+			if resp.NextPage == 0 {
+				println("no more pages to go through")
+				break
+			}
+			options.Page = resp.NextPage
+		}
+		return allRepos
+	}
+	options := &github.RepositoryListByOrgOptions{
+		ListOptions: globalOptions,
 	}
 	var allRepos []*github.Repository
 	for {
-		pageOfRepos, resp, githubError := client.Repositories.List(context.Background(), owner, options)
+		pageOfRepos, resp, githubError := client.Repositories.ListByOrg(ctx, owner, options)
 		if githubError != nil {
 			return nil
 		}
 		allRepos = append(allRepos, pageOfRepos...)
 		if resp.NextPage == 0 {
+			println("no more pages to go through")
 			break
 		}
 		options.Page = resp.NextPage
 	}
+	return allRepos
+}
+
+func (gh GithubHost) queryApi(owner string, accessToken string, ownerType OwnerType) interface{} {
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: accessToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+	allRepos := getGithubRepos(client, owner, ownerType)
 	return allRepos
 }
 

@@ -19,7 +19,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		getRepositoriesAndOutput(BitbucketHost{cmd.Name()}, argOwner, argShowCount)
+		getRepositoriesAndOutput(BitbucketHost{cmd.Name()}, argOwner, argIsOrg, argShowCount, argAccessToken)
 	},
 }
 
@@ -35,17 +35,17 @@ func (bb BitbucketHost) getCommandName() string {
 	return bb.name
 }
 
-func (bb BitbucketHost) getRepoNames(owner string) []string {
+func (bb BitbucketHost) getRepoNames(owner string, accessToken string, ownerType OwnerType) []string {
 	var repos []string
 	// get all pages of results
-	allRepos := bb.queryApi(owner)
+	allRepos := bb.queryApi(owner, accessToken, ownerType)
 	if allRepos != nil {
 		repos = bb.parseRepoNames(allRepos)
 	}
 	return repos
 }
 
-func (bb BitbucketHost) queryApi(owner string) interface{} {
+func (bb BitbucketHost) queryApi(owner string, accessToken string, ownerType OwnerType) interface{} {
 	client := bitbucket.NewV2()
 	options := bitbucket.ListReposOpts{
 		Pagelen: 500,

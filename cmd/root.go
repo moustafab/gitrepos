@@ -13,7 +13,9 @@ import (
 
 var cfgFile string
 var argOwner string
+var argIsOrg bool
 var argShowCount bool
+var argAccessToken string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -50,7 +52,10 @@ func init() {
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	rootCmd.PersistentFlags().StringVarP(&argOwner, "owner", "o", "", "(required) owner of the repositories")
+	rootCmd.PersistentFlags().StringVarP(&argAccessToken, "token", "t", "", "(required) access token for the repositories")
 	rootCmd.PersistentFlags().BoolVarP(&argShowCount, "count", "c", false, "(optional) print the count")
+	rootCmd.PersistentFlags().BoolVarP(&argIsOrg, "organization", "g", false, "(optional) is an organization?")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
