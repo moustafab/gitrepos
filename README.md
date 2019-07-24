@@ -6,6 +6,10 @@ a simple cli that gets a list of git repositories for an owner from various site
 
 `go get github.com/moustafab/gitrepos`
 
+## docker
+
+`docker run moustafab/gitrepos --- github -o moustafab`
+
 ## usage
 
 ```
