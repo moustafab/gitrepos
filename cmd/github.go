@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
+	"log"
 )
 
 // githubCmd represents the github command
@@ -50,10 +51,10 @@ func enableSecurityAlerts(client *github.Client, owner string, allRepos []*githu
 		var repositoryName = *repository.Name
 		_, githubError := client.Repositories.EnableVulnerabilityAlerts(context.Background(), owner, repositoryName)
 		if githubError != nil {
-			println("Something went wrong with %s", repositoryName)
+			log.Printf("Something went wrong with %v\n", repositoryName)
 			continue
 		}
-		println("%s successfully enabled vulnerability alerts!", repositoryName)
+		log.Printf("%v successfully enabled vulnerability alerts!\n", repositoryName)
 	}
 }
 
@@ -91,7 +92,6 @@ func getGithubRepos(client *github.Client, owner string, ownerType OwnerType) []
 		}
 		allRepos = append(allRepos, pageOfRepos...)
 		if resp.NextPage == 0 {
-			println("no more pages to go through")
 			break
 		}
 		options.Page = resp.NextPage
@@ -105,9 +105,12 @@ func (gh GithubHost) queryApi(owner string, accessToken string, ownerType OwnerT
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: accessToken},
 	)
-	tc := oauth2.NewClient(ctx, ts)
+	tokenClient := oauth2.NewClient(ctx, ts)
+	if len(accessToken) == 0 {
+		tokenClient = nil
+	}
 
-	client := github.NewClient(tc)
+	client := github.NewClient(tokenClient)
 	allRepos := getGithubRepos(client, owner, ownerType)
 	return allRepos
 }
@@ -122,5 +125,3 @@ func (gh GithubHost) parseRepoNames(unTypedRepositories interface{}) []string {
 	}
 	return listOfRepoNames
 }
-
-
